@@ -8,7 +8,7 @@ function App() {
 
     <SignedOut>
     <SignInButton mode='modal'>
-      <button className=''>Sign Up please</button>
+      <button >Login</button>
     </SignInButton>
     </SignedOut>
 
