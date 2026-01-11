@@ -17,6 +17,7 @@
     "express": "^5.2.1",
     "inngest": "^3.49.0",
     "mongoose": "^9.1.2",
+    "stream-chat": "^9.28.0",
     "videocallinterview": "file:.."
   },
   "devDependencies": {
