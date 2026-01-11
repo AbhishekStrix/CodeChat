@@ -7,10 +7,9 @@ import { deleteStreamUser, upsertStreamUser } from "./stream.js";
 export const inngest = ENV.INNGEST_EVENT_KEY
   ? new Inngest({
       id: "CodeChat",
-      eventKey: ENV.INNGEST_EVENT_KEY, 
+      eventKey: ENV.INNGEST_EVENT_KEY,
     })
   : null;
-
 
 const syncUser = inngest?.createFunction(
   { id: "sync-user" },
@@ -26,17 +25,18 @@ const syncUser = inngest?.createFunction(
       image_url,
     } = event.data;
 
-    await User.create({
+    const newUser = await User.create({
       clerkId: id,
       email: email_addresses?.[0]?.email_address,
-      name: `${first_name || ""} ${last_name || ""}`,
+      name: `${first_name || ""} ${last_name || ""}`.trim(),
       profileImage: image_url,
     });
+
     await upsertStreamUser({
-      id:newUser.clerkId.toString(),
-      name:newUser.name,
-      img:newUser.profileImage,
-    })
+      id: newUser.clerkId.toString(),
+      name: newUser.name,
+      image: newUser.profileImage, // Stream prefers `image`
+    });
   }
 );
 
@@ -45,9 +45,10 @@ const deleteUserFromDB = inngest?.createFunction(
   { event: "clerk/user.deleted" },
   async ({ event }) => {
     await connectDb();
+
     await User.deleteOne({ clerkId: event.data.id });
 
-    await deleteStreamUser(clerkId.toString())
+    await deleteStreamUser(event.data.id.toString());
   }
 );
 
